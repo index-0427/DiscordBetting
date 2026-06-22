@@ -36,7 +36,7 @@ docker run -d --name discord-betting --restart unless-stopped discord-betting
 
 ## License / ライセンスについて
 
-このリポジトリは、Nickyboi氏らによる DiscordBetting を元にしたフォークです。
+このリポジトリは、[inoue-773](https://github.com/inoue-773)氏らによる DiscordBetting を元にしたフォークです。
 
 フォーク元に由来するソースコードの利用については、フォーク元の権利者による許諾・ライセンス条件に従ってください。
 私は、フォーク元に由来するソースコードについて、追加の利用許諾を行うものではありません。
