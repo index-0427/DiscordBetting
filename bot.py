@@ -104,7 +104,9 @@ def startText(title, contenders, timer):
     for i, contender in enumerate(contenders, 1):
         text += f"> /bet {i} (賭けたい額) で \"{contender}\"に賭ける\n"
     text += "> /ptsで現在の所持ポイントを確認\n"
-    text += "賭けのやり方は [こちら](https://discord.com/channels/1489612132738662481/1518588660805669016/1518621827776122880)"
+    guide_url = os.getenv("GUIDE_URL", "")
+    if guide_url:
+        text += f"賭けのやり方は [こちら]({guide_url})"
     return text
 
 def userInputText(user, amount, contender, percentages):
