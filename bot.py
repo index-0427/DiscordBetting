@@ -402,7 +402,7 @@ async def leaderboard(ctx):
     lines = [f"**{i}.** {u['name']} — {u['points']} pt" for i, u in enumerate(users, 1)]
     embed = discord.Embed(title="ポイント保有者一覧", description="\n".join(lines), color=discord.Color.gold())
     embed.set_footer(text=f"合計: {total} pt | {len(users)} 人")
-    await ctx.respond(embed=embed)
+    await ctx.respond(embed=embed, ephemeral=True)
 
 @bot.slash_command(name='balance', description='特定のユーザーのポイントを確認する 管理者のみ')
 @is_admin()
