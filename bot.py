@@ -221,11 +221,15 @@ async def start(ctx, title: discord.Option(str, "試合のタイトル"), timer:
         await timerMessage.edit(content=f"# 残り時間: {timerStr}")
         await asyncio.sleep(1)
 
-    # Stop the background task when the timer ends
-    bot.update_stats.stop()
+    if bot.update_stats.is_running():
+        bot.update_stats.stop()
 
-    await ctx.send("~~--------------------------------------------~~")
-    await close(ctx)
+    if not globalDict.get('closed'):
+        globalDict['closed'] = True
+        await ctx.send("~~--------------------------------------------~~")
+        percentages = calculatePercentages()
+        embed = endText(globalDict['title'], percentages)
+        await ctx.send(embed=embed)
 
 @tasks.loop(seconds=5)
 async def update_stats(contenderList):
@@ -314,6 +318,10 @@ async def close(ctx):
     if not globalDict:
         await ctx.respond("現在進行中の賭けはありません。", ephemeral=True)
         return
+    bot.endTime = datetime.datetime.now()
+    if bot.update_stats.is_running():
+        bot.update_stats.stop()
+    globalDict['closed'] = True
     percentages = calculatePercentages()
     embed = endText(globalDict['title'], percentages)
     await ctx.respond(embed=embed)
