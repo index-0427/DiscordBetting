@@ -238,6 +238,9 @@ bot.update_stats = update_stats
 async def bet(ctx, contender: discord.Option(int, "賭けたい対戦者の番号を選択", choices=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], required = True), amount: discord.Option(int, "賭けたいポイント数を入力", min_value=1, required = True)):
     user = ctx.author.name
     userMention = ctx.author.mention
+    if not globalDict:
+        await ctx.respond("現在賭けは行われていません。", ephemeral=True)
+        return
     if datetime.datetime.now() >= bot.endTime:
         await ctx.respond(f"{userMention} 賭けはすでに終了しています", ephemeral=True)
         return
@@ -308,6 +311,9 @@ def getBettingStatsEmbed(contenders):
 @bot.slash_command(name='close', description='賭けを中断する 管理者のみ')
 @is_admin()
 async def close(ctx):
+    if not globalDict:
+        await ctx.respond("現在進行中の賭けはありません。", ephemeral=True)
+        return
     percentages = calculatePercentages()
     embed = endText(globalDict['title'], percentages)
     await ctx.respond(embed=embed)
