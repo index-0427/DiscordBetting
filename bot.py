@@ -205,7 +205,7 @@ async def start(ctx, title: discord.Option(str, "試合のタイトル"), timer:
     await ctx.respond(text)
 
     # Send initial countdown timer message
-    timerMessage = await ctx.send(f"# 残り時間: {timerStr}")
+    bot.timerMessage = await ctx.send(f"# 残り時間: {timerStr}")
 
     # Send initial betting statistics message
     bot.statsMessage = await ctx.send(embed=getBettingStatsEmbed(contenderList))
@@ -218,7 +218,7 @@ async def start(ctx, title: discord.Option(str, "試合のタイトル"), timer:
         remaining = (bot.endTime - datetime.datetime.now()).seconds
         minutes, secs = divmod(remaining, 60)
         timerStr = '{:02d}:{:02d}'.format(minutes, secs)
-        await timerMessage.edit(content=f"# 残り時間: {timerStr}")
+        await bot.timerMessage.edit(content=f"# 残り時間: {timerStr}")
         await asyncio.sleep(1)
 
     if bot.update_stats.is_running():
@@ -321,6 +321,8 @@ async def close(ctx):
     bot.endTime = datetime.datetime.now()
     if bot.update_stats.is_running():
         bot.update_stats.stop()
+    if hasattr(bot, 'timerMessage'):
+        await bot.timerMessage.edit(content="# 残り時間: 00:00")
     globalDict['closed'] = True
     percentages = calculatePercentages()
     embed = endText(globalDict['title'], percentages)
