@@ -15,7 +15,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix='/', intents=intents, case_insensitive=True, debug_guilds=[1466863494489178217, 1489612132738662481])
+bot = commands.Bot(command_prefix='/', intents=intents, case_insensitive=True, debug_guilds=[1466863494489178217, 1489612132738662481, 1474647050967711757])
 
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 CLUSTER_LINK = os.getenv("MONGODB_CLUSTER_LINK")
