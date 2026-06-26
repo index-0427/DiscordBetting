@@ -24,17 +24,17 @@ docker run -d --name discord-betting --restart unless-stopped discord-betting
 
 | コマンド | 説明 | 権限 |
 |----------|------|------|
-| `/start` | 賭けを開始 | 管理者 |
 | `/bet` | 対戦者に賭ける | 全員 |
-| `/close` | 賭けを締め切る | 管理者 |
-| `/winner` | 勝者を決定し払い戻し | 管理者 |
-| `/refund` | 全額返金して中断 | 管理者 |
 | `/pts` | 自分の所持ポイント確認 | 全員 |
-| `/addpt` | ポイントを付与 | 管理者 |
-| `/reducept` | ポイントを減らす | 管理者 |
-| `/leaderboard` | 1pt以上の保有者一覧と総額 | 管理者 |
-| `/ptlog` | ポイント操作履歴と管理者別統計 | 管理者 |
-| `/balance` | 特定ユーザーのポイント確認 | 管理者 |
+| `/bet-start` | 賭けを開始 | 管理者 |
+| `/bet-close` | 賭けを締め切る | 管理者 |
+| `/bet-winner` | 勝者を決定し払い戻し | 管理者 |
+| `/bet-refund` | 全額返金して中断 | 管理者 |
+| `/bet-addpt` | ポイントを付与 | 管理者 |
+| `/bet-reducept` | ポイントを減らす | 管理者 |
+| `/bet-leaderboard` | 1pt以上の保有者一覧と総額 | 管理者 |
+| `/bet-ptlog` | ポイント操作履歴と管理者別統計 | 管理者 |
+| `/bet-balance` | 特定ユーザーのポイント確認 | 管理者 |
 
 ## License / ライセンスについて
 
