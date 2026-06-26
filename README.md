@@ -18,6 +18,7 @@ docker run -d --name discord-betting --restart unless-stopped discord-betting
 | `MONGODB_CLUSTER_LINK` | MongoDB接続URI |
 | `ADMIN_ROLE_ID` | 管理者ロールID（カンマ区切りで複数指定可） |
 | `DISTRIBUTED_PERCENTAGE` | 勝者への分配率（0.0〜1.0） |
+| `GUIDE_URL` | 賭け方ガイドのURL（任意） |
 
 ## コマンド
 
@@ -32,6 +33,7 @@ docker run -d --name discord-betting --restart unless-stopped discord-betting
 | `/addpt` | ポイントを付与 | 管理者 |
 | `/reducept` | ポイントを減らす | 管理者 |
 | `/leaderboard` | 1pt以上の保有者一覧と総額 | 管理者 |
+| `/ptlog` | ポイント操作履歴と管理者別統計 | 管理者 |
 | `/balance` | 特定ユーザーのポイント確認 | 管理者 |
 
 ## License / ライセンスについて
