@@ -425,6 +425,17 @@ async def reducePts(ctx, member: discord.Member, amount: discord.Option(int, "�
     logging.warning(f"{admin_name} has reduced {amount} points from {member.name}")
     bot.userDB["logs"].insert_one({"action": "reducept", "admin": admin_name, "target": member.name, "amount": amount, "timestamp": datetime.datetime.utcnow()})
 
+@bot.slash_command(name='transfer', description='預かり金の担当を移動する 管理者のみ')
+async def transfer(ctx, from_staff: discord.Member, to_staff: discord.Member, amount: discord.Option(int, "移動する金額", min_value=1)):
+    if not await check_admin(ctx): return
+    db, _ = findTheirGuild(ctx.guild.name)
+    if db is None:
+        await ctx.respond("Guild database not found.", ephemeral=True)
+        return
+    db["logs"].insert_one({"action": "transfer", "from": from_staff.name, "to": to_staff.name, "amount": amount, "admin": ctx.author.name, "timestamp": datetime.datetime.utcnow()})
+    await ctx.respond(f"預かり金 {amount} pt の担当を {from_staff.name} → {to_staff.name} に移動しました。")
+    logging.warning(f"{ctx.author.name} transferred custody of {amount} pt from {from_staff.name} to {to_staff.name}")
+
 @bot.slash_command(name='leaderboard', description='1ポイント以上持っている人の一覧と総額 管理者のみ')
 async def leaderboard(ctx):
     if not await check_admin(ctx): return
@@ -458,7 +469,13 @@ async def ptlog(ctx):
         return
 
     admin_stats = {}
+    transfer_in = {}
+    transfer_out = {}
     for log in logs:
+        if log["action"] == "transfer":
+            transfer_out[log["from"]] = transfer_out.get(log["from"], 0) + log["amount"]
+            transfer_in[log["to"]] = transfer_in.get(log["to"], 0) + log["amount"]
+            continue
         admin = log["admin"]
         if admin not in admin_stats:
             admin_stats[admin] = {"addpt": 0, "reducept": 0, "add_total": 0, "reduce_total": 0}
@@ -469,16 +486,28 @@ async def ptlog(ctx):
             admin_stats[admin]["reducept"] += 1
             admin_stats[admin]["reduce_total"] += log["amount"]
 
+    all_admins = set(admin_stats.keys()) | set(transfer_in.keys()) | set(transfer_out.keys())
     stat_lines = []
-    for admin, s in admin_stats.items():
-        stat_lines.append(f"**{admin}**\n  addpt: {s['addpt']}回 (+{s['add_total']} pt) / reducept: {s['reducept']}回 (-{s['reduce_total']} pt)")
+    for admin in all_admins:
+        s = admin_stats.get(admin, {"addpt": 0, "reducept": 0, "add_total": 0, "reduce_total": 0})
+        t_in = transfer_in.get(admin, 0)
+        t_out = transfer_out.get(admin, 0)
+        custody = s["add_total"] - s["reduce_total"] + t_in - t_out
+        line = f"**{admin}**\n  addpt: {s['addpt']}回 (+{s['add_total']} pt) / reducept: {s['reducept']}回 (-{s['reduce_total']} pt)"
+        if t_in or t_out:
+            line += f"\n  transfer: +{t_in} / -{t_out} pt"
+        line += f"\n  **預かり残高: {custody} pt**"
+        stat_lines.append(line)
 
     recent = logs[:10]
     recent_lines = []
     for log in recent:
         ts = log["timestamp"].strftime("%m/%d %H:%M")
-        sign = "+" if log["action"] == "addpt" else "-"
-        recent_lines.append(f"`{ts}` {log['admin']} → {log['target']} {sign}{log['amount']} pt")
+        if log["action"] == "transfer":
+            recent_lines.append(f"`{ts}` 預かり移動: {log['from']} → {log['to']} {log['amount']} pt")
+        else:
+            sign = "+" if log["action"] == "addpt" else "-"
+            recent_lines.append(f"`{ts}` {log['admin']} → {log['target']} {sign}{log['amount']} pt")
 
     embed = discord.Embed(title="ポイント操作ログ", color=discord.Color.orange())
     embed.add_field(name="管理者別統計", value="\n".join(stat_lines), inline=False)
